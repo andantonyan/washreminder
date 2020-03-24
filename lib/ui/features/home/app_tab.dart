@@ -1,0 +1,4 @@
+enum AppTab {
+  dashboard,
+  settings,
+}

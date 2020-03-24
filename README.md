@@ -1,4 +1,4 @@
-# app
+# Wash Hands Reminder
 
 A new Flutter project.
 
