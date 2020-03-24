@@ -31,6 +31,7 @@ class Dashboard extends StatelessWidget {
           backgroundColor: AppColors.lightGray,
         ),
         const SizedBox(height: 10),
+        Divider(),
         Expanded(
           child: Timeline(
             shrinkWrap: false,
@@ -39,7 +40,7 @@ class Dashboard extends StatelessWidget {
             children: [
               TimelineModel(
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
                     '10:00',
                     style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
@@ -51,7 +52,7 @@ class Dashboard extends StatelessWidget {
               ),
               TimelineModel(
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
                     '10:30',
                     style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
@@ -63,7 +64,7 @@ class Dashboard extends StatelessWidget {
               ),
               TimelineModel(
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
                     '11:00',
                     style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
@@ -75,7 +76,7 @@ class Dashboard extends StatelessWidget {
               ),
               TimelineModel(
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
                     '10:30',
                     style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
@@ -87,7 +88,7 @@ class Dashboard extends StatelessWidget {
               ),
               TimelineModel(
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
                     '10:30',
                     style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
@@ -99,7 +100,7 @@ class Dashboard extends StatelessWidget {
               ),
               TimelineModel(
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
                     '11:00',
                     style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
@@ -111,7 +112,7 @@ class Dashboard extends StatelessWidget {
               ),
               TimelineModel(
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 45, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
                   child: Text(
                     '11:30',
                     style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
@@ -121,10 +122,23 @@ class Dashboard extends StatelessWidget {
                 iconBackground: AppColors.primary,
                 icon: Icon(Icons.notifications_active, color: AppColors.white, size: 20),
               ),
+              TimelineModel(
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
+                  child: Text(
+                    '12:00',
+                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
+                  ),
+                ),
+                position: TimelineItemPosition.right,
+                iconBackground: AppColors.error,
+                icon: Icon(Icons.notifications_off, color: AppColors.white, size: 20),
+              ),
             ],
             position: TimelinePosition.Center,
           ),
-        )
+        ),
+        Divider(),
       ],
     );
   }
