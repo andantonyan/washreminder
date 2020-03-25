@@ -10,13 +10,13 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(final BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        const SizedBox(height: 100),
+          const SizedBox(height: 80),
         Text(
           'Let\'s keep our hands cleaned',
-          style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w600, color: AppColors.primary),
+          textAlign: TextAlign.center,
+          style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w600, color: AppColors.text),
         ),
         const SizedBox(height: 30),
         CircularPercentIndicator(
@@ -138,7 +138,6 @@ class Dashboard extends StatelessWidget {
             position: TimelinePosition.Center,
           ),
         ),
-        Divider(),
       ],
     );
   }

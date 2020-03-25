@@ -14,7 +14,10 @@ class HomeScreen extends StatelessWidget {
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (final context, final state) {
           return Scaffold(
-            body: SafeArea(child: _buildBody(context, state)),
+            body: SafeArea(child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildBody(context, state),
+            )),
             bottomNavigationBar: _buildBottomNavigationBar(context, state),
           );
         },
@@ -35,7 +38,6 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildBottomNavigationBar(final BuildContext context, final HomeState state) {
     return BottomNavigationBar(
-      elevation: 0,
       currentIndex: AppTab.values.indexOf(state.activeTab),
       onTap: (index) => _onNavigationItemTapped(context, AppTab.values[index]),
       items: <BottomNavigationBarItem>[
