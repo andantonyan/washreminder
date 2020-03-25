@@ -10,7 +10,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => HomeBloc()..add(HomeStarted()),
+      create: (_) => HomeBloc()..add(HomeStarted()),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (final context, final state) {
           return Scaffold(
