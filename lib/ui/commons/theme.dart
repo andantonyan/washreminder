@@ -10,6 +10,7 @@ class AppColors {
   static const accent = Color(0xFF961bff);
   static const error = Color(0xFFF50057);
   static const text = Color(0xFF424242);
+  static const gray = Color(0xFF696969);
   static const lightGray = Color(0xFFd3d3d3);
   static const negroni = Color(0xFFfee0be);
   static const white = Color(0xFFFFFFFF);

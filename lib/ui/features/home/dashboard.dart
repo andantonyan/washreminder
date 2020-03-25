@@ -1,8 +1,6 @@
 import 'package:app/ui/commons/commons.dart';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:timeline_list/timeline.dart';
-import 'package:timeline_list/timeline_model.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard();
@@ -12,7 +10,7 @@ class Dashboard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-          const SizedBox(height: 80),
+        const SizedBox(height: 80),
         Text(
           'Let\'s keep our hands cleaned',
           textAlign: TextAlign.center,
@@ -29,114 +27,6 @@ class Dashboard extends StatelessWidget {
           ),
           progressColor: AppColors.primary,
           backgroundColor: AppColors.lightGray,
-        ),
-        const SizedBox(height: 10),
-        Divider(),
-        Expanded(
-          child: Timeline(
-            shrinkWrap: false,
-            lineWidth: 1.3,
-            lineColor: AppColors.negroni,
-            children: [
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '10:00',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.left,
-                iconBackground: AppColors.primary,
-                icon: Icon(Icons.notifications_active, color: AppColors.white, size: 20),
-              ),
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '10:30',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.right,
-                iconBackground: AppColors.primary,
-                icon: Icon(Icons.notifications_active, color: AppColors.white, size: 20),
-              ),
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '11:00',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.left,
-                iconBackground: AppColors.error,
-                icon: Icon(Icons.notifications_off, color: AppColors.white, size: 20),
-              ),
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '10:30',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.right,
-                iconBackground: AppColors.primary,
-                icon: Icon(Icons.notifications_active, color: AppColors.white, size: 20),
-              ),
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '10:30',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.left,
-                iconBackground: AppColors.primary,
-                icon: Icon(Icons.notifications_active, color: AppColors.white, size: 20),
-              ),
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '11:00',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.right,
-                iconBackground: AppColors.error,
-                icon: Icon(Icons.notifications_off, color: AppColors.white, size: 20),
-              ),
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '11:30',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.left,
-                iconBackground: AppColors.primary,
-                icon: Icon(Icons.notifications_active, color: AppColors.white, size: 20),
-              ),
-              TimelineModel(
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
-                  child: Text(
-                    '12:00',
-                    style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w300),
-                  ),
-                ),
-                position: TimelineItemPosition.right,
-                iconBackground: AppColors.error,
-                icon: Icon(Icons.notifications_off, color: AppColors.white, size: 20),
-              ),
-            ],
-            position: TimelinePosition.Center,
-          ),
         ),
       ],
     );
