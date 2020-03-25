@@ -6,18 +6,21 @@ abstract class NotificationState {
   const NotificationState();
 }
 
-class NotificationInitial extends NotificationState {
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) || other is NotificationInitial && runtimeType == other.runtimeType;
+class NotificationInitial extends NotificationState {}
 
-  @override
-  int get hashCode => 0;
-}
+class NotificationScheduled extends NotificationState {}
 
 class NotificationFailure extends NotificationState implements ErrorState {
   @override
   final String error;
 
   const NotificationFailure({@required this.error});
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NotificationFailure && runtimeType == other.runtimeType && error == other.error;
+
+  @override
+  int get hashCode => error.hashCode;
 }

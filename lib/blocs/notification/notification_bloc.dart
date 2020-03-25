@@ -53,17 +53,18 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   Stream<NotificationState> _mapStartingToState() async* {
     await _initializePlugin();
-    await _flutterLocalNotificationsPlugin.cancelAll();
 
     List<PendingNotificationRequest> requests = await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
 
     if (requests.isEmpty) {
       final Duration fromTime = await _settingsRepository.getFromTime();
       final Duration toTime = await _settingsRepository.getToTime();
-      final Duration interval = await _settingsRepository.getRepeatInterval();
+      final Duration interval = await _settingsRepository.getInterval();
 
       await _scheduleNotification(fromTime, toTime, interval);
     }
+
+    yield NotificationScheduled();
   }
 
   Future _initializePlugin() async {

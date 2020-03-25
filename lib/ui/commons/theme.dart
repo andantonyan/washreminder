@@ -7,7 +7,7 @@ class AppColors {
   AppColors._();
 
   static const primary = Color(0xFF96cdee);
-  static const accent = Color(0xFF961bff);
+  static const accent =  Color(0xFF26A69A);
   static const error = Color(0xFFF50057);
   static const text = Color(0xFF424242);
   static const gray = Color(0xFF696969);
