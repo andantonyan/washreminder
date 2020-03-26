@@ -1,3 +1,4 @@
+import 'package:app/blocs/blocs.dart';
 import 'package:app/core/core.dart';
 import 'package:app/ui/commons/commons.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => HomeBloc(settingsRepository: injector<SettingsRepository>())..add(HomeStarted()),
+      create: (_) => HomeBloc(
+        notificationBloc: BlocProvider.of<NotificationBloc>(context),
+        settingsRepository: injector<SettingsRepository>(),
+      )..add(HomeStarted()),
       child: BlocBuilder<HomeBloc, HomeState>(
         builder: (final context, final state) {
           if (state.loading) return LoadingScreen();

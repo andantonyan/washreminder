@@ -7,8 +7,10 @@ class SettingsRepository {
   static const _fromTimeStorageKey = 'from_time';
   static const _toTimeStorageKey = 'to_time';
 
-  static const _defaultInterval = Duration(minutes: 30);
+  // TODO: for test release
+  // static const _defaultInterval = Duration(minutes: 30);
   static final _defaultFromTime = Duration(hours: 10);
+  static const _defaultInterval = Duration(minutes: 5);
   static final _defaultToTime = Duration(hours: 22);
   static final _defaultIsNotificationsEnabled = true;
 

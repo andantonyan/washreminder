@@ -2,6 +2,7 @@ import 'package:app/core/core.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart' hide RepeatInterval;
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 import 'notification_event.dart';
@@ -35,10 +36,13 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       NotificationDetails(_androidPlatformChannelSpecifics, _iOSPlatformChannelSpecifics);
   static final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  final Logger _logger;
   final SettingsRepository _settingsRepository;
 
-  NotificationBloc({@required SettingsRepository settingsRepository})
-      : assert(settingsRepository != null),
+  NotificationBloc({@required Logger logger, @required SettingsRepository settingsRepository})
+      : assert(logger != null),
+        assert(settingsRepository != null),
+        _logger = logger,
         _settingsRepository = settingsRepository;
 
   @override
@@ -48,42 +52,64 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   Stream<NotificationState> mapEventToState(final NotificationEvent event) async* {
     if (event is NotificationStarted) {
       yield* _mapStartingToState();
+    } else if (event is NotificationReschedule) {
+      yield* _mapRescheduleToState();
+    }
+    if (event is NotificationClear) {
+      yield* _mapClearToState();
     }
   }
 
   Stream<NotificationState> _mapStartingToState() async* {
+    yield NotificationInProgress();
+
     await _initializePlugin();
 
     List<PendingNotificationRequest> requests = await _flutterLocalNotificationsPlugin.pendingNotificationRequests();
 
-    if (requests.isEmpty) {
-      final Duration fromTime = await _settingsRepository.getFromTime();
-      final Duration toTime = await _settingsRepository.getToTime();
-      final Duration interval = await _settingsRepository.getInterval();
-
-      await _scheduleNotification(fromTime, toTime, interval);
+    if (requests.isEmpty && await _settingsRepository.isNotificationsEnabled()) {
+      await _scheduleNotification();
     }
 
     yield NotificationScheduled();
   }
 
+  Stream<NotificationState> _mapRescheduleToState() async* {
+    if (await _settingsRepository.isNotificationsEnabled()) {
+      await _clearNotifications();
+      await _scheduleNotification();
+    }
+
+    yield NotificationScheduled();
+  }
+
+  Stream<NotificationState> _mapClearToState() async* {
+    await _clearNotifications();
+    yield NotificationEmpty();
+  }
+
   Future _initializePlugin() async {
+    _logger.d('Initilizing notification plugin...');
     await _flutterLocalNotificationsPlugin.initialize(
       _initializationSettings,
       onSelectNotification: (String payload) async {},
     );
+    _logger.i('Done initilizing notification plugin.');
   }
 
-  Future<void> _scheduleNotification(
-    final Duration fromTime,
-    final Duration toTime,
-    final Duration interval,
-  ) async {
+  Future<void> _scheduleNotification() async {
+    final Duration fromTime = await _settingsRepository.getFromTime();
+    final Duration toTime = await _settingsRepository.getToTime();
+    final Duration interval = await _settingsRepository.getInterval();
+
+    _logger.d('Scheduling notifications FromTime:"$fromTime", ToTime:"$toTime", Interval:"$interval"...');
+
     int id = 0;
     DateTime start = DateTime(1970).add(fromTime);
     final end = DateTime(1970).add(toTime);
 
     do {
+      _logger.d('Scheduling notification ID:"$id"...');
       await _flutterLocalNotificationsPlugin.showDailyAtTime(
         id,
         'Hands wash time',
@@ -93,10 +119,15 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       );
       start = start.add(interval);
       id += 1;
+      _logger.i('Done scheduling notification ID:"$id".');
     } while (start.isBefore(end) || start.isAtSameMomentAs(end));
+
+    _logger.i('Done scheduling notifications.');
   }
 
   Future<void> _clearNotifications() async {
+    _logger.d('Clearing notifications...');
     await _flutterLocalNotificationsPlugin.cancelAll();
+    _logger.i('Done clearing notifications.');
   }
 }

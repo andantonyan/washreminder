@@ -1,3 +1,4 @@
+import 'package:app/blocs/blocs.dart';
 import 'package:app/core/core.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -7,10 +8,15 @@ import 'home_event.dart';
 import 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  final NotificationBloc _notificationBloc;
   final SettingsRepository _settingsRepository;
 
-  HomeBloc({@required SettingsRepository settingsRepository})
-      : assert(settingsRepository != null),
+  HomeBloc({
+    @required NotificationBloc notificationBloc,
+    @required SettingsRepository settingsRepository,
+  })  : assert(notificationBloc != null),
+        assert(settingsRepository != null),
+        _notificationBloc = notificationBloc,
         _settingsRepository = settingsRepository;
 
   HomeState get initialState => HomeState.empty();
@@ -52,16 +58,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Stream<HomeState> _mapDisablePressedToState() async* {
     await _settingsRepository.disableNotifications();
+    _notificationBloc.add(NotificationClear());
     yield state.update(isEnabled: false);
   }
 
   Stream<HomeState> _mapEnablePressedToState() async* {
     await _settingsRepository.enableNotifications();
+    _notificationBloc.add(NotificationReschedule());
     yield state.update(isEnabled: true);
   }
 
   Stream<HomeState> _mapIntervalChangeToState(final Duration interval) async* {
     await _settingsRepository.updateInterval(interval);
+    _notificationBloc.add(NotificationReschedule());
     yield state.update(interval: interval);
   }
 
@@ -71,15 +80,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
     if (toTime != null) await _settingsRepository.updateToTime(toTime);
 
+    _notificationBloc.add(NotificationReschedule());
     yield state.update(fromTime: fromTime, toTime: toTime);
   }
 
   Stream<HomeState> _mapToTimeChangeToState(final Duration toTime) async* {
     final fromTime = state.fromTime.compareTo(toTime) > 0 ? toTime : null;
-    await _settingsRepository.updateFromTime(toTime);
+    await _settingsRepository.updateToTime(toTime);
 
     if (fromTime != null) await _settingsRepository.updateFromTime(fromTime);
 
+    _notificationBloc.add(NotificationReschedule());
     yield state.update(toTime: toTime, fromTime: fromTime);
   }
 }

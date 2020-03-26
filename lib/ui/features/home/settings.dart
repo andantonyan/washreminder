@@ -57,16 +57,14 @@ class Settings extends StatelessWidget {
                 context: context,
                 label: 'From',
                 value: fromTime,
-                onConfirm: (time) => BlocProvider.of<HomeBloc>(context)
-                    .add(HomeFromTimeChanged(fromTime: Duration(hours: time.hour, minutes: time.minute))),
+                onConfirm: (time) => _onFromTimeChange(context, time),
               ),
               const SizedBox(width: 20),
               _buildTimePicker(
                 context: context,
                 label: 'To',
                 value: toTime,
-                onConfirm: (time) => BlocProvider.of<HomeBloc>(context)
-                    .add(HomeToTimeChanged(toTime: Duration(hours: time.hour, minutes: time.minute))),
+                onConfirm: (time) => _onToTimeChange(context, time),
               ),
             ],
           ),
@@ -85,7 +83,9 @@ class Settings extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              _buildIntervalOption(context: context, text: '20 min', value: const Duration(minutes: 20)),
+              // TODO: for test release
+              // _buildIntervalOption(context: context, text: '20 min', value: const Duration(minutes: 20)),
+              _buildIntervalOption(context: context, text: '5 min', value: const Duration(minutes: 5)),
               const SizedBox(width: 20),
               _buildIntervalOption(context: context, text: '30 min', value: const Duration(minutes: 30)),
             ],
@@ -150,8 +150,7 @@ class Settings extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                 ),
               ),
-              onPressed: () => BlocProvider.of<HomeBloc>(context)
-                  .add(isEnabled ? HomeDisableButtonPressed() : HomeEnableButtonPressed()),
+              onPressed: () => _onNotificationStatusChange(context),
             ),
           ),
         ),
@@ -174,7 +173,7 @@ class Settings extends StatelessWidget {
           onPressed: isEnabled
               ? () {
                   if (!selected) {
-                    BlocProvider.of<HomeBloc>(context).add(HomeIntervalChanged(interval: value));
+                    _onIntervalChange(context, value);
                   }
                 }
               : null,
@@ -261,5 +260,23 @@ class Settings extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _onToTimeChange(BuildContext context, DateTime time) {
+    return BlocProvider.of<HomeBloc>(context)
+        .add(HomeToTimeChanged(toTime: Duration(hours: time.hour, minutes: time.minute)));
+  }
+
+  void _onFromTimeChange(BuildContext context, DateTime time) {
+    return BlocProvider.of<HomeBloc>(context)
+        .add(HomeFromTimeChanged(fromTime: Duration(hours: time.hour, minutes: time.minute)));
+  }
+
+  void _onNotificationStatusChange(BuildContext context) {
+    return BlocProvider.of<HomeBloc>(context).add(isEnabled ? HomeDisableButtonPressed() : HomeEnableButtonPressed());
+  }
+
+  void _onIntervalChange(BuildContext context, Duration value) {
+    BlocProvider.of<HomeBloc>(context).add(HomeIntervalChanged(interval: value));
   }
 }

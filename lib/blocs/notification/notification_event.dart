@@ -6,3 +6,7 @@ abstract class NotificationEvent {
 }
 
 class NotificationStarted extends NotificationEvent {}
+
+class NotificationReschedule extends NotificationEvent {}
+
+class NotificationClear extends NotificationEvent {}

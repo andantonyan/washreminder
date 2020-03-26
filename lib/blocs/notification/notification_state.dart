@@ -8,7 +8,11 @@ abstract class NotificationState {
 
 class NotificationInitial extends NotificationState {}
 
+class NotificationInProgress extends NotificationState {}
+
 class NotificationScheduled extends NotificationState {}
+
+class NotificationEmpty extends NotificationState {}
 
 class NotificationFailure extends NotificationState implements ErrorState {
   @override

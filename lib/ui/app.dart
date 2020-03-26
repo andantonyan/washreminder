@@ -3,6 +3,7 @@ import 'package:app/core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 
 import 'commons/commons.dart';
 import 'features/features.dart';
@@ -20,7 +21,10 @@ class App extends StatelessWidget {
       theme: theme,
       routes: routes,
       home: BlocProvider<NotificationBloc>(
-        create: (_) => NotificationBloc(settingsRepository: injector<SettingsRepository>())..add(NotificationStarted()),
+        create: (_) => NotificationBloc(
+          logger: injector<Logger>(),
+          settingsRepository: injector<SettingsRepository>(),
+        )..add(NotificationStarted()),
         child: BlocBuilder<NotificationBloc, NotificationState>(
           builder: (_, __) => HomeScreen(),
         ),
