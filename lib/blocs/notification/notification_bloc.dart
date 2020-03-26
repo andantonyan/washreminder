@@ -76,7 +76,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
   Stream<NotificationState> _mapRescheduleToState() async* {
     if (await _settingsRepository.isNotificationsEnabled()) {
-      await _clearNotifications();
+      await _cancelAllNotifications();
       await _scheduleNotification();
     }
 
@@ -84,7 +84,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   }
 
   Stream<NotificationState> _mapClearToState() async* {
-    await _clearNotifications();
+    await _cancelAllNotifications();
     yield NotificationEmpty();
   }
 
@@ -109,7 +109,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     final end = DateTime(1970).add(toTime);
 
     do {
-      _logger.d('Scheduling notification ID:"$id"...');
+      _logger.d('Scheduling notification ID:$id...');
       await _flutterLocalNotificationsPlugin.showDailyAtTime(
         id,
         'Hands wash time',
@@ -119,15 +119,15 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       );
       start = start.add(interval);
       id += 1;
-      _logger.i('Done scheduling notification ID:"$id".');
+      _logger.i('Done scheduling notification ID:$id.');
     } while (start.isBefore(end) || start.isAtSameMomentAs(end));
 
     _logger.i('Done scheduling notifications.');
   }
 
-  Future<void> _clearNotifications() async {
-    _logger.d('Clearing notifications...');
+  Future<void> _cancelAllNotifications() async {
+    _logger.d('Canceling notifications...');
     await _flutterLocalNotificationsPlugin.cancelAll();
-    _logger.i('Done clearing notifications.');
+    _logger.i('Done canceling notifications.');
   }
 }

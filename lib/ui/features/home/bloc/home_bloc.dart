@@ -37,18 +37,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       yield* _mapFromTimeChangeToState(event.fromTime);
     } else if (event is HomeToTimeChanged) {
       yield* _mapToTimeChangeToState(event.toTime);
+    } else if (event is HomeSaveButtonPressed) {
+      yield* _mapSaveButtonPressedToState();
+    } else if (event is HomeDiscardButtonPressed) {
+      yield* _mapDiscardButtonPressedToState();
     }
   }
 
   Stream<HomeState> _mapStartedToState() async* {
     yield state.update(loading: true);
 
+    final fromTime = await _settingsRepository.getFromTime();
+    final toTime = await _settingsRepository.getToTime();
+    final interval = await _settingsRepository.getInterval();
+
     yield state.update(
       activeTab: AppTab.dashboard,
       isEnabled: await _settingsRepository.isNotificationsEnabled(),
-      fromTime: await _settingsRepository.getFromTime(),
-      toTime: await _settingsRepository.getToTime(),
-      interval: await _settingsRepository.getInterval(),
+      fromTime: fromTime,
+      updatedFromTime: null,
+      toTime: toTime,
+      updatedToTime: null,
+      interval: interval,
+      updatedInterval: null,
     );
   }
 
@@ -69,28 +80,41 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapIntervalChangeToState(final Duration interval) async* {
-    await _settingsRepository.updateInterval(interval);
-    _notificationBloc.add(NotificationReschedule());
-    yield state.update(interval: interval);
+    yield state.update(updatedInterval: interval);
   }
 
   Stream<HomeState> _mapFromTimeChangeToState(final Duration fromTime) async* {
-    final toTime = state.toTime.compareTo(fromTime) < 0 ? fromTime : null;
-    await _settingsRepository.updateFromTime(fromTime);
+    final toTime = state.toTime.compareTo(fromTime) <= 0 ? Duration(minutes: fromTime.inMinutes + 24) : null;
 
-    if (toTime != null) await _settingsRepository.updateToTime(toTime);
-
-    _notificationBloc.add(NotificationReschedule());
-    yield state.update(fromTime: fromTime, toTime: toTime);
+    yield state.update(updatedFromTime: fromTime, updatedToTime: toTime);
   }
 
   Stream<HomeState> _mapToTimeChangeToState(final Duration toTime) async* {
-    final fromTime = state.fromTime.compareTo(toTime) > 0 ? toTime : null;
-    await _settingsRepository.updateToTime(toTime);
+    final _toTime = toTime.compareTo(state.fromTime) <= 0 ? Duration(minutes: toTime.inMinutes + 24) : toTime;
 
-    if (fromTime != null) await _settingsRepository.updateFromTime(fromTime);
+    yield state.update(updatedToTime: _toTime);
+  }
 
-    _notificationBloc.add(NotificationReschedule());
-    yield state.update(toTime: toTime, fromTime: fromTime);
+  Stream<HomeState> _mapSaveButtonPressedToState() async* {
+    if (state.hasUnsavedChanges) {
+      if (state.isFromTimeUpdated) await _settingsRepository.updateFromTime(state.updatedFromTime);
+      if (state.isToTimeUpdated) await _settingsRepository.updateToTime(state.updatedToTime);
+      if (state.isIntervalUpdated) await _settingsRepository.updateInterval(state.updatedInterval);
+
+      yield state.update(
+        interval: state.updatedInterval ?? state.interval,
+        fromTime: state.updatedFromTime ?? state.fromTime,
+        toTime: state.updatedToTime ?? state.toTime,
+        updatedInterval: null,
+        updatedFromTime: null,
+        updatedToTime: null,
+      );
+
+      _notificationBloc.add(NotificationReschedule());
+    }
+  }
+
+  Stream<HomeState> _mapDiscardButtonPressedToState() async* {
+    yield state.update(updatedInterval: null, updatedFromTime: null, updatedToTime: null);
   }
 }

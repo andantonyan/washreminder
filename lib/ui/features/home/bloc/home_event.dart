@@ -88,3 +88,7 @@ class HomeToTimeChanged extends HomeEvent {
     return 'HomeToTimeChanged{toTime: $toTime}';
   }
 }
+
+class HomeDiscardButtonPressed extends HomeEvent {}
+
+class HomeSaveButtonPressed extends HomeEvent {}

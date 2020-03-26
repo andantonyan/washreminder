@@ -17,6 +17,7 @@ class App extends StatelessWidget {
     );
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Wash Hands Reminder',
       theme: theme,
       routes: routes,

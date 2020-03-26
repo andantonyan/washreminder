@@ -47,9 +47,10 @@ class HomeScreen extends StatelessWidget {
       case AppTab.settings:
         return Settings(
           isEnabled: state.isEnabled,
-          fromTime: state.fromTime,
-          toTime: state.toTime,
-          interval: state.interval,
+          fromTime: state.updatedFromTime ?? state.fromTime,
+          toTime: state.updatedToTime ?? state.toTime,
+          interval: state.updatedInterval ?? state.interval,
+          hasUnsavedChanges: state.hasUnsavedChanges,
         );
       default:
         return Container();

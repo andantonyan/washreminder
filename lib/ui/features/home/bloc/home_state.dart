@@ -8,8 +8,19 @@ class HomeState implements LoadingState {
   final AppTab activeTab;
   final bool isEnabled;
   final Duration fromTime;
+  final Duration updatedFromTime;
   final Duration toTime;
+  final Duration updatedToTime;
   final Duration interval;
+  final Duration updatedInterval;
+
+  bool get isFromTimeUpdated => (updatedFromTime != null && updatedFromTime.compareTo(fromTime) != 0);
+
+  bool get isToTimeUpdated => (updatedToTime != null && updatedToTime.compareTo(toTime) != 0);
+
+  bool get isIntervalUpdated => (updatedInterval != null && updatedInterval.compareTo(interval) != 0);
+
+  bool get hasUnsavedChanges => isFromTimeUpdated || isToTimeUpdated || isIntervalUpdated;
 
   @override
   final bool loading;
@@ -18,8 +29,11 @@ class HomeState implements LoadingState {
     this.activeTab,
     this.isEnabled,
     this.fromTime,
+    this.updatedFromTime,
     this.toTime,
+    this.updatedToTime,
     this.interval,
+    this.updatedInterval,
     this.loading,
   });
 
@@ -33,33 +47,21 @@ class HomeState implements LoadingState {
     Duration fromTime,
     Duration toTime,
     Duration interval,
+    Duration updatedFromTime,
+    Duration updatedToTime,
+    Duration updatedInterval,
     bool loading,
   }) {
-    return copyWith(
-      activeTab: activeTab,
-      isEnabled: isEnabled,
-      fromTime: fromTime,
-      toTime: toTime,
-      interval: interval,
-      loading: loading ?? false
-    );
-  }
-
-  HomeState copyWith({
-    AppTab activeTab,
-    bool isEnabled,
-    Duration fromTime,
-    Duration toTime,
-    Duration interval,
-    bool loading,
-  }) {
-    return new HomeState(
+    return HomeState(
       activeTab: activeTab ?? this.activeTab,
       isEnabled: isEnabled ?? this.isEnabled,
       fromTime: fromTime ?? this.fromTime,
       toTime: toTime ?? this.toTime,
       interval: interval ?? this.interval,
-      loading: loading ?? this.loading,
+      loading: loading ?? false,
+      updatedToTime: updatedToTime,
+      updatedFromTime: updatedFromTime,
+      updatedInterval: updatedInterval,
     );
   }
 
@@ -71,8 +73,11 @@ class HomeState implements LoadingState {
           activeTab == other.activeTab &&
           isEnabled == other.isEnabled &&
           fromTime == other.fromTime &&
+          updatedFromTime == other.updatedFromTime &&
           toTime == other.toTime &&
+          updatedToTime == other.updatedToTime &&
           interval == other.interval &&
+          updatedInterval == other.updatedInterval &&
           loading == other.loading;
 
   @override
@@ -80,12 +85,15 @@ class HomeState implements LoadingState {
       activeTab.hashCode ^
       isEnabled.hashCode ^
       fromTime.hashCode ^
+      updatedFromTime.hashCode ^
       toTime.hashCode ^
+      updatedToTime.hashCode ^
       interval.hashCode ^
+      updatedInterval.hashCode ^
       loading.hashCode;
 
   @override
   String toString() {
-    return 'HomeState{activeTab: $activeTab, isEnabled: $isEnabled, fromTime: $fromTime, toTime: $toTime, interval: $interval, loading: $loading}';
+    return 'HomeState{activeTab: $activeTab, isEnabled: $isEnabled, fromTime: $fromTime, updatedFromTime: $updatedFromTime, toTime: $toTime, updatedToTime: $updatedToTime, interval: $interval, updatedInterval: $updatedInterval, loading: $loading}';
   }
 }

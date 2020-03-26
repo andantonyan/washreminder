@@ -11,12 +11,14 @@ class Settings extends StatelessWidget {
   final Duration fromTime;
   final Duration toTime;
   final Duration interval;
+  final bool hasUnsavedChanges;
 
   const Settings({
     @required this.isEnabled,
     @required this.fromTime,
     @required this.toTime,
     @required this.interval,
+    this.hasUnsavedChanges,
   });
 
   @override
@@ -26,15 +28,17 @@ class Settings extends StatelessWidget {
       children: <Widget>[
         SizedBox(height: 40),
         _buildConfigChangeSection(context),
-        const SizedBox(height: 60),
+        const SizedBox(height: 20),
         _buildFooter(context),
+        const SizedBox(height: 20),
       ],
     );
   }
 
   _buildConfigChangeSection(final BuildContext context) {
-    return Opacity(
-      opacity: isEnabled ? 1 : 0.5,
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
+      opacity: isEnabled ? 1 : .7,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -68,7 +72,7 @@ class Settings extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 40),
           Row(
             children: <Widget>[
               Text(
@@ -83,9 +87,7 @@ class Settings extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              // TODO: for test release
-              // _buildIntervalOption(context: context, text: '20 min', value: const Duration(minutes: 20)),
-              _buildIntervalOption(context: context, text: '5 min', value: const Duration(minutes: 5)),
+              _buildIntervalOption(context: context, text: '20 min', value: const Duration(minutes: 20)),
               const SizedBox(width: 20),
               _buildIntervalOption(context: context, text: '30 min', value: const Duration(minutes: 30)),
             ],
@@ -117,42 +119,69 @@ class Settings extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        _buildActionButton(context),
-        const SizedBox(height: 20),
-        Text(
-          'Some text here, Some text here, Some text here, Some text here, Some text here, ',
-          style: TextStyle(
-            fontWeight: FontWeight.w300,
-            color: AppColors.text,
-          ),
-        ),
+        _buildActionButtons(context),
       ],
     );
   }
 
-  Widget _buildActionButton(final BuildContext context) {
-    return Row(
+  Widget _buildActionButtons(final BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Expanded(child: Container()),
-        const SizedBox(width: 20),
-        Expanded(
-          child: SizedBox(
-            height: 50,
-            child: _buildButton(
-              context: context,
-              icon: isEnabled
-                  ? Icon(Icons.alarm_off, color: AppColors.error)
-                  : Icon(Icons.alarm_on, color: AppColors.text),
-              child: Text(
-                isEnabled ? 'Disable' : 'Enable',
-                style: TextStyle(
-                  color: isEnabled ? AppColors.error : AppColors.text,
-                  fontWeight: FontWeight.w600,
+        AnimatedOpacity(
+          duration: Duration(milliseconds: 300),
+          opacity: hasUnsavedChanges ? 1 : .7,
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: SizedBox(
+                  height: 50,
+                  child: _buildButton(
+                    context: context,
+                    icon: Icon(Icons.undo, color: AppColors.text),
+                    child: Text('Discard', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
+                    onPressed: hasUnsavedChanges ? () => _onDiscardButtonPressed(context) : null,
+                  ),
                 ),
               ),
-              onPressed: () => _onNotificationStatusChange(context),
-            ),
+              const SizedBox(width: 20),
+              Expanded(
+                child: SizedBox(
+                  height: 50,
+                  child: _buildButton(
+                    context: context,
+                    icon: Icon(Icons.save, color: AppColors.accent),
+                    child: Text('Save', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w600)),
+                    onPressed: hasUnsavedChanges ? () => _onSaveButtonPressed(context) : null,
+                  ),
+                ),
+              ),
+            ],
           ),
+        ),
+        Divider(),
+        const SizedBox(height: 40),
+        Row(
+          children: <Widget>[
+            Expanded(child: Container()),
+            const SizedBox(width: 20),
+            Expanded(
+              child: SizedBox(
+                height: 50,
+                child: _buildButton(
+                  context: context,
+                  icon: isEnabled
+                      ? Icon(Icons.alarm_off, color: AppColors.error)
+                      : Icon(Icons.alarm_on, color: AppColors.text),
+                  child: Text(
+                    isEnabled ? 'Disable' : 'Enable',
+                    style: TextStyle(color: isEnabled ? AppColors.error : AppColors.text, fontWeight: FontWeight.w600),
+                  ),
+                  onPressed: () => isEnabled ? _onDisableButtonPressed(context) : _onEnableButtonPressed(context),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -198,22 +227,22 @@ class Settings extends StatelessWidget {
   }) {
     if (icon != null) {
       return RaisedButton.icon(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: .7,
         onPressed: onPressed,
         icon: icon,
         label: child,
         color: AppColors.white,
-        disabledColor: AppColors.lightGray,
+        disabledColor: AppColors.white,
       );
     } else {
       return RaisedButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
-        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: .7,
         onPressed: onPressed,
         child: child,
         color: AppColors.white,
-        disabledColor: AppColors.lightGray,
+        disabledColor: AppColors.white,
       );
     }
   }
@@ -230,16 +259,18 @@ class Settings extends StatelessWidget {
     return Expanded(
       child: _buildButton(
         context: context,
-        onPressed: () {
-          DatePicker.showTimePicker(
-            context,
-            theme: DatePickerTheme(containerHeight: 210),
-            showSecondsColumn: false,
-            showTitleActions: true,
-            onConfirm: onConfirm,
-            currentTime: dateTime,
-          );
-        },
+        onPressed: isEnabled
+            ? () {
+                DatePicker.showTimePicker(
+                  context,
+                  theme: DatePickerTheme(containerHeight: 210),
+                  showSecondsColumn: false,
+                  showTitleActions: true,
+                  onConfirm: onConfirm,
+                  currentTime: dateTime,
+                );
+              }
+            : null,
         child: SizedBox(
           height: 50.0,
           child: Row(
@@ -272,11 +303,23 @@ class Settings extends StatelessWidget {
         .add(HomeFromTimeChanged(fromTime: Duration(hours: time.hour, minutes: time.minute)));
   }
 
-  void _onNotificationStatusChange(BuildContext context) {
-    return BlocProvider.of<HomeBloc>(context).add(isEnabled ? HomeDisableButtonPressed() : HomeEnableButtonPressed());
-  }
-
   void _onIntervalChange(BuildContext context, Duration value) {
     BlocProvider.of<HomeBloc>(context).add(HomeIntervalChanged(interval: value));
+  }
+
+  void _onDisableButtonPressed(BuildContext context) {
+    return BlocProvider.of<HomeBloc>(context).add(HomeDisableButtonPressed());
+  }
+
+  void _onEnableButtonPressed(BuildContext context) {
+    return BlocProvider.of<HomeBloc>(context).add(HomeEnableButtonPressed());
+  }
+
+  void _onSaveButtonPressed(final BuildContext context) {
+    return BlocProvider.of<HomeBloc>(context).add(HomeSaveButtonPressed());
+  }
+
+  void _onDiscardButtonPressed(final BuildContext context) {
+    return BlocProvider.of<HomeBloc>(context).add(HomeDiscardButtonPressed());
   }
 }
