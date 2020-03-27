@@ -107,8 +107,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     _logger.d('Scheduling notifications FromTime:"$fromTime", ToTime:"$toTime", Interval:"$interval"...');
 
-    DateTime start = DateTime(now.year, now.month, now.day).add(fromTime);
-    final end = DateTime(now.year, now.month, now.day).add(toTime);
+    DateTime start = DateTime(now.year).add(fromTime);
+    final end = DateTime(now.year).add(toTime);
     int id = 0;
 
     if (start.isAfter(end)) start = start.subtract(Duration(days: 1));
@@ -121,7 +121,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       scheduledHours.add(time);
       _logger.d('Scheduling notification $time...');
 
-      await _flutterLocalNotificationsPlugin.showDailyAtTime(id, 'Hey!', 'Wash Your Hands Often to Stay Healthy.',
+      await _flutterLocalNotificationsPlugin.showDailyAtTime(id, 'Hey!', 'Wash your hands often to stay healthy.',
           Time(time.hour, time.minute, time.second), _platformChannelSpecifics);
 
       _logger.i('Done scheduling notification Time(${time.hour}:${time.minute}:${time.second}).');

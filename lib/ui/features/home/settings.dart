@@ -110,6 +110,15 @@ class Settings extends StatelessWidget {
               _buildIntervalOption(context: context, text: '2 hrs', value: const Duration(minutes: 120)),
             ],
           ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              _buildIntervalOption(context: context, text: '3 hrs', value: const Duration(minutes: 180)),
+              const SizedBox(width: 30),
+              Expanded(child: Container(),),
+            ],
+          ),
         ],
       ),
     );

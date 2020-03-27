@@ -15,7 +15,7 @@ Duration parseDuration(final String s) {
   return Duration(hours: hours, minutes: minutes, microseconds: micros);
 }
 
-String formatDuration(final Duration duration) {
+String formatDuration(final Duration duration, [final seconds = false]) {
   String twoDigits(int n) {
     if (n >= 10) return '$n';
     return '0$n';
@@ -23,5 +23,5 @@ String formatDuration(final Duration duration) {
 
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
   String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
-  return '${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds';
+  return '${twoDigits(duration.inHours)}:$twoDigitMinutes${seconds ? ':' + twoDigitSeconds : ''}';
 }
