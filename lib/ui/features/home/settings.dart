@@ -38,7 +38,7 @@ class Settings extends StatelessWidget {
   _buildConfigChangeSection(final BuildContext context) {
     return AnimatedOpacity(
       duration: Duration(milliseconds: 300),
-      opacity: isEnabled ? 1 : .7,
+      opacity: isEnabled ? 1 : .5,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -63,7 +63,7 @@ class Settings extends StatelessWidget {
                 value: fromTime,
                 onConfirm: (time) => _onFromTimeChange(context, time),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 30),
               _buildTimePicker(
                 context: context,
                 label: 'To',
@@ -88,7 +88,7 @@ class Settings extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               _buildIntervalOption(context: context, text: '20 min', value: const Duration(minutes: 20)),
-              const SizedBox(width: 20),
+              const SizedBox(width: 30),
               _buildIntervalOption(context: context, text: '30 min', value: const Duration(minutes: 30)),
             ],
           ),
@@ -97,7 +97,7 @@ class Settings extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               _buildIntervalOption(context: context, text: '45 min', value: const Duration(minutes: 45)),
-              const SizedBox(width: 20),
+              const SizedBox(width: 30),
               _buildIntervalOption(context: context, text: '1 hr', value: const Duration(minutes: 60)),
             ],
           ),
@@ -106,7 +106,7 @@ class Settings extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               _buildIntervalOption(context: context, text: '1 hr 30 min', value: const Duration(minutes: 90)),
-              const SizedBox(width: 20),
+              const SizedBox(width: 30),
               _buildIntervalOption(context: context, text: '2 hrs', value: const Duration(minutes: 120)),
             ],
           ),
@@ -120,51 +120,11 @@ class Settings extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         _buildActionButtons(context),
-      ],
-    );
-  }
-
-  Widget _buildActionButtons(final BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        AnimatedOpacity(
-          duration: Duration(milliseconds: 300),
-          opacity: hasUnsavedChanges ? 1 : .7,
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: SizedBox(
-                  height: 50,
-                  child: _buildButton(
-                    context: context,
-                    icon: Icon(Icons.undo, color: AppColors.text),
-                    child: Text('Discard', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
-                    onPressed: hasUnsavedChanges ? () => _onDiscardButtonPressed(context) : null,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: SizedBox(
-                  height: 50,
-                  child: _buildButton(
-                    context: context,
-                    icon: Icon(Icons.save, color: AppColors.accent),
-                    child: Text('Save', style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.w600)),
-                    onPressed: hasUnsavedChanges ? () => _onSaveButtonPressed(context) : null,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Divider(),
-        const SizedBox(height: 40),
+        const SizedBox(height: 20),
         Row(
           children: <Widget>[
             Expanded(child: Container()),
-            const SizedBox(width: 20),
+            const SizedBox(width: 30),
             Expanded(
               child: SizedBox(
                 height: 50,
@@ -172,10 +132,10 @@ class Settings extends StatelessWidget {
                   context: context,
                   icon: isEnabled
                       ? Icon(Icons.alarm_off, color: AppColors.error)
-                      : Icon(Icons.alarm_on, color: AppColors.text),
+                      : Icon(Icons.alarm_on, color: AppColors.accent),
                   child: Text(
                     isEnabled ? 'Disable' : 'Enable',
-                    style: TextStyle(color: isEnabled ? AppColors.error : AppColors.text, fontWeight: FontWeight.w600),
+                    style: TextStyle(color: isEnabled ? AppColors.error : AppColors.accent, fontWeight: FontWeight.w600),
                   ),
                   onPressed: () => isEnabled ? _onDisableButtonPressed(context) : _onEnableButtonPressed(context),
                 ),
@@ -184,6 +144,40 @@ class Settings extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildActionButtons(final BuildContext context) {
+    return AnimatedOpacity(
+      duration: Duration(milliseconds: 300),
+      opacity: hasUnsavedChanges ? 1 : .5,
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: SizedBox(
+              height: 50,
+              child: _buildButton(
+                context: context,
+                icon: Icon(Icons.undo, color: AppColors.text),
+                child: Text('Discard', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
+                onPressed: hasUnsavedChanges ? () => _onDiscardButtonPressed(context) : null,
+              ),
+            ),
+          ),
+          const SizedBox(width: 30),
+          Expanded(
+            child: SizedBox(
+              height: 50,
+              child: _buildButton(
+                context: context,
+                icon: Icon(Icons.save, color: AppColors.text),
+                child: Text('Save', style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w600)),
+                onPressed: hasUnsavedChanges ? () => _onSaveButtonPressed(context) : null,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -199,13 +193,7 @@ class Settings extends StatelessWidget {
         height: 50,
         child: _buildButton(
           context: context,
-          onPressed: isEnabled
-              ? () {
-                  if (!selected) {
-                    _onIntervalChange(context, value);
-                  }
-                }
-              : null,
+          onPressed: isEnabled ? () => _onIntervalChange(context, value) : null,
           child: Text(
             text,
             style: TextStyle(
@@ -226,23 +214,17 @@ class Settings extends StatelessWidget {
     final Icon icon,
   }) {
     if (icon != null) {
-      return RaisedButton.icon(
+      return OutlineButton.icon(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: .7,
         onPressed: onPressed,
         icon: icon,
         label: child,
-        color: AppColors.white,
-        disabledColor: AppColors.white,
       );
     } else {
-      return RaisedButton(
+      return OutlineButton(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: .7,
         onPressed: onPressed,
         child: child,
-        color: AppColors.white,
-        disabledColor: AppColors.white,
       );
     }
   }

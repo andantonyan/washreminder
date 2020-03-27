@@ -1,3 +1,4 @@
+import 'package:app/commons/commons.dart';
 import 'package:app/core/di/di.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -7,7 +8,7 @@ class SettingsRepository {
   static const _fromTimeStorageKey = 'from_time';
   static const _toTimeStorageKey = 'to_time';
 
-   static const _defaultInterval = Duration(minutes: 30);
+  static const _defaultInterval = Duration(minutes: 30);
   static final _defaultFromTime = Duration(hours: 10);
   static final _defaultToTime = Duration(hours: 22);
   static final _defaultIsNotificationsEnabled = true;
@@ -26,14 +27,14 @@ class SettingsRepository {
     final isEnabled = await _storage.read(key: _notificationsEnabledStorageKey);
     return isEnabled != null ? (isEnabled == 'true') : _defaultIsNotificationsEnabled;
   }
-  
+
   Future<void> updateInterval(final Duration duration) async {
     await _storage.write(key: _intervalStorageKey, value: duration.toString());
   }
 
   Future<Duration> getInterval() async {
     final duration = await _storage.read(key: _intervalStorageKey);
-    return duration != null ? _parseDuration(duration) : _defaultInterval;
+    return duration != null ? parseDuration(duration) : _defaultInterval;
   }
 
   Future<void> updateFromTime(final Duration duration) async {
@@ -42,7 +43,7 @@ class SettingsRepository {
 
   Future<Duration> getFromTime() async {
     final duration = await _storage.read(key: _fromTimeStorageKey);
-    return duration != null ? _parseDuration(duration) : _defaultFromTime;
+    return duration != null ? parseDuration(duration) : _defaultFromTime;
   }
 
   Future<void> updateToTime(final Duration duration) async {
@@ -51,23 +52,6 @@ class SettingsRepository {
 
   Future<Duration> getToTime() async {
     final duration = await _storage.read(key: _toTimeStorageKey);
-    return duration != null ? _parseDuration(duration) : _defaultToTime;
-  }
-
-  Duration _parseDuration(final String s) {
-    int hours = 0;
-    int minutes = 0;
-    int micros;
-
-    List<String> parts = s.split(':');
-    if (parts.length > 2) {
-      hours = int.parse(parts[parts.length - 3]);
-    }
-    if (parts.length > 1) {
-      minutes = int.parse(parts[parts.length - 2]);
-    }
-
-    micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
-    return Duration(hours: hours, minutes: minutes, microseconds: micros);
+    return duration != null ? parseDuration(duration) : _defaultToTime;
   }
 }

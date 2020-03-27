@@ -1,7 +1,8 @@
+import 'package:app/commons/commons.dart' as common;
 import 'package:app/core/core.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart' hide RepeatInterval;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
@@ -98,31 +99,38 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   }
 
   Future<void> _scheduleNotification() async {
+    final DateTime now = DateTime.now();
     final Duration fromTime = await _settingsRepository.getFromTime();
     final Duration toTime = await _settingsRepository.getToTime();
     final Duration interval = await _settingsRepository.getInterval();
+    final List<common.Time> scheduledHours = [];
 
     _logger.d('Scheduling notifications FromTime:"$fromTime", ToTime:"$toTime", Interval:"$interval"...');
 
+    DateTime start = DateTime(now.year, now.month, now.day).add(fromTime);
+    final end = DateTime(now.year, now.month, now.day).add(toTime);
     int id = 0;
-    DateTime start = DateTime(1970).add(fromTime);
-    final end = DateTime(1970).add(toTime);
+
+    if (start.isAfter(end)) start = start.subtract(Duration(days: 1));
 
     do {
-      _logger.d('Scheduling notification ID:$id...');
-      await _flutterLocalNotificationsPlugin.showDailyAtTime(
-        id,
-        'Hands wash time',
-        '',
-        Time(start.hour, start.minute),
-        _platformChannelSpecifics,
-      );
+      final time = common.Time(start.hour, start.minute, start.second);
+
+      if (scheduledHours.contains(time)) continue;
+
+      scheduledHours.add(time);
+      _logger.d('Scheduling notification $time...');
+
+      await _flutterLocalNotificationsPlugin.showDailyAtTime(id, 'Hey!', 'Wash Your Hands Often to Stay Healthy.',
+          Time(time.hour, time.minute, time.second), _platformChannelSpecifics);
+
+      _logger.i('Done scheduling notification Time(${time.hour}:${time.minute}:${time.second}).');
+
       start = start.add(interval);
       id += 1;
-      _logger.i('Done scheduling notification ID:$id.');
     } while (start.isBefore(end) || start.isAtSameMomentAs(end));
 
-    _logger.i('Done scheduling notifications.');
+    _logger.i('Done scheduling notifications \n${scheduledHours.join('\n')}.');
   }
 
   Future<void> _cancelAllNotifications() async {

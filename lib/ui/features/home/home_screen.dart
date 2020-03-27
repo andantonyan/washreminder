@@ -24,7 +24,7 @@ class HomeScreen extends StatelessWidget {
           return Scaffold(
             body: SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: _buildBody(context, state),
               ),
             ),

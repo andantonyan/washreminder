@@ -84,15 +84,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapFromTimeChangeToState(final Duration fromTime) async* {
-    final toTime = state.toTime.compareTo(fromTime) <= 0 ? Duration(minutes: fromTime.inMinutes + 24) : null;
-
-    yield state.update(updatedFromTime: fromTime, updatedToTime: toTime);
+    yield state.update(
+      updatedFromTime: fromTime,
+      updatedToTime: state.updatedToTime ?? state.toTime,
+    );
   }
 
   Stream<HomeState> _mapToTimeChangeToState(final Duration toTime) async* {
-    final _toTime = toTime.compareTo(state.fromTime) <= 0 ? Duration(minutes: toTime.inMinutes + 24) : toTime;
-
-    yield state.update(updatedToTime: _toTime);
+    yield state.update(
+      updatedFromTime: state.updatedFromTime ?? state.fromTime,
+      updatedToTime: toTime,
+    );
   }
 
   Stream<HomeState> _mapSaveButtonPressedToState() async* {

@@ -1,6 +1,6 @@
 import 'package:app/ui/commons/commons.dart';
+import 'package:app/ui/features/home/clock.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 
 class Dashboard extends StatelessWidget {
   final bool isEnabled;
@@ -29,17 +29,12 @@ class Dashboard extends StatelessWidget {
             style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w600, color: AppColors.text),
           ),
           const SizedBox(height: 30),
-          CircularPercentIndicator(
-            radius: 200,
-            lineWidth: 15,
-            percent: .3,
-            center: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Image.asset('assets/images/home_icon.png'),
-            ),
-            progressColor: AppColors.primary,
-            backgroundColor: AppColors.lightGray,
-          ),
+          Clock(
+            fromTime: fromTime,
+            toTime: toTime,
+            interval: interval,
+            isEnabled: isEnabled,
+          )
         ],
       ),
     );
