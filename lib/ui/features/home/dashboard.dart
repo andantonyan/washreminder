@@ -23,9 +23,8 @@ class Dashboard extends StatelessWidget {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-          const SizedBox(height: 80),
           Text(
-            'Let\'s make bacteria away',
+            'Let\'s take bacteria away',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headline.copyWith(fontWeight: FontWeight.w600, color: AppColors.text),
           ),
@@ -36,7 +35,6 @@ class Dashboard extends StatelessWidget {
             interval: interval,
             isEnabled: isEnabled,
           ),
-          const SizedBox(height: 30),
           RichText(
             textAlign: TextAlign.start,
             text: TextSpan(

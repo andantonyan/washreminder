@@ -114,18 +114,18 @@ class _ClockState extends State<Clock> {
 
     Duration fromTime = widget.fromTime ?? Duration();
     Duration toTime = widget.toTime ?? Duration();
-    Duration nowTime = Duration(hours: now.hour, minutes: now.minute, seconds: now.second);
+    Duration currentTime = Duration(hours: now.hour, minutes: now.minute, seconds: now.second);
 
     if (fromTime.compareTo(toTime) > 0) {
       toTime = Duration(seconds: toTime.inSeconds, days: 1);
     }
 
-    final secondsPassed = nowTime.inSeconds - fromTime.inSeconds;
-    final isActive = nowTime.compareTo(fromTime) > 0 && nowTime.compareTo(toTime) < 0;
+    final secondsPassed = currentTime.inSeconds - fromTime.inSeconds;
+    final isActive = currentTime.compareTo(fromTime) > 0 && currentTime.compareTo(toTime) < 0;
     _progress = Duration(
       seconds: (!isActive || !widget.isEnabled) ? 0 : (secondsPassed % widget?.interval?.inSeconds),
     );
-    _start = isActive ? Duration(seconds: nowTime.inSeconds - _progress.inSeconds) : fromTime;
+    _start = isActive ? Duration(seconds: currentTime.inSeconds - _progress.inSeconds) : fromTime;
     _end = Duration(seconds: _start.inSeconds + (widget.interval?.inSeconds ?? 0));
 
     if (mounted) {

@@ -26,7 +26,6 @@ class Settings extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        SizedBox(height: 40),
         _buildConfigChangeSection(context),
         const SizedBox(height: 20),
         _buildFooter(context),
@@ -42,7 +41,6 @@ class Settings extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const SizedBox(height: 40),
           Row(
             children: <Widget>[
               Text(
