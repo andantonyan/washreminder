@@ -1,3 +1,5 @@
+import 'scheduled_hour.dart';
+
 Duration parseDuration(final String s) {
   int hours = 0;
   int minutes = 0;
@@ -24,4 +26,24 @@ String formatDuration(final Duration duration, [final seconds = false]) {
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
   String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
   return '${twoDigits(duration.inHours)}:$twoDigitMinutes${seconds ? ':' + twoDigitSeconds : ''}';
+}
+
+List<ScheduledHour> calculateScheduledHours(final Duration fromTime, final Duration toTime, final Duration interval) {
+  final DateTime now = DateTime.now();
+  final List<ScheduledHour> scheduledHours = [];
+
+  DateTime start = DateTime(now.year).add(fromTime);
+  final end = DateTime(now.year).add(toTime);
+
+  if (start.isAfter(end)) start = start.subtract(Duration(days: 1));
+
+   while (start.add(interval).isBefore(end)) {
+     final from = Duration(hours: start.hour, minutes: start.minute, seconds: start.second);
+     start = start.add(interval);
+     final to = Duration(hours: start.hour, minutes: start.minute, seconds: start.second);
+
+     scheduledHours.add(ScheduledHour(from, to));
+   };
+
+  return scheduledHours.toSet().toList();
 }

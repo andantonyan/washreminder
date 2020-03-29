@@ -7,34 +7,41 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
-class Clock extends StatefulWidget {
+class ClockOld extends StatefulWidget {
   final bool isEnabled;
-  final List<ScheduledHour> scheduledHours;
+  final Duration toTime;
+  final Duration fromTime;
+  final Duration interval;
 
-  Clock({
+  ClockOld({
     Key key,
     @required this.isEnabled,
-    @required this.scheduledHours,
+    @required this.fromTime,
+    @required this.toTime,
+    @required this.interval,
   }) : super(key: key);
 
   @override
-  _ClockState createState() => _ClockState();
+  _ClockOldState createState() => _ClockOldState();
 }
 
-class _ClockState extends State<Clock> {
+class _ClockOldState extends State<ClockOld> {
   Timer _timer;
-  Duration _from;
-  Duration _to;
-  double _max = 1.0;
-  double _initialValue = 0.0;
-
-  bool get _isActive => widget.isEnabled && _from != null && _to != null;
+  Duration _progress;
+  Duration _start;
+  Duration _end;
 
   @override
   void initState() {
     super.initState();
     _calculate();
     _setupTimer();
+  }
+
+  @override
+  void dispose() {
+    _cancelTimer();
+    super.dispose();
   }
 
   @override
@@ -48,15 +55,15 @@ class _ClockState extends State<Clock> {
             customWidths: CustomSliderWidths(trackWidth: 20, progressBarWidth: 20, shadowWidth: 0),
             customColors: CustomSliderColors(
               trackColor: AppColors.lightGray,
-              progressBarColor: _isActive ? AppColors.primary : AppColors.lightGray,
+              progressBarColor: widget.isEnabled ? AppColors.primary : AppColors.lightGray,
               hideShadow: true,
               dotColor: AppColors.transparent,
             ),
             size: 250,
           ),
           min: 0,
-          max: _max,
-          initialValue: _initialValue,
+          max: widget.interval?.inSeconds?.toDouble() ?? 0,
+          initialValue: _progress.inSeconds.toDouble(),
           innerWidget: (final double value) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -65,8 +72,8 @@ class _ClockState extends State<Clock> {
                 SizedBox(
                   height: 150,
                   child: Icon(
-                    _isActive ? Icons.alarm : Icons.alarm_off,
-                    color: _isActive ? AppColors.accent.withOpacity(.5) : AppColors.lightGray,
+                    widget.isEnabled ? Icons.alarm : Icons.alarm_off,
+                    color: widget.isEnabled ? AppColors.accent.withOpacity(.5) : AppColors.lightGray,
                     size: 130,
                   ),
                 ),
@@ -85,46 +92,52 @@ class _ClockState extends State<Clock> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          _buildTime(context, _from),
-          _buildTime(context, _to),
+          Text(
+            widget.isEnabled ? formatDuration(_start) : '--:--',
+            style: Theme.of(context).textTheme.headline.copyWith(
+                color: widget.isEnabled ? AppColors.accent.withOpacity(.7) : AppColors.lightGray,
+                fontWeight: FontWeight.w600),
+          ),
+          Text(
+            widget.isEnabled ? formatDuration(_end) : '--:--',
+            style: Theme.of(context).textTheme.headline.copyWith(
+                color: widget.isEnabled ? AppColors.accent.withOpacity(.7) : AppColors.lightGray,
+                fontWeight: FontWeight.w600),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildTime(final BuildContext context, final Duration time) {
-    return Text(
-      _isActive ? formatDuration(time) : '--:--',
-      style: Theme.of(context).textTheme.headline.copyWith(
-          color: _isActive ? AppColors.accent.withOpacity(.7) : AppColors.lightGray, fontWeight: FontWeight.w600),
-    );
-  }
-
-  // FIXME: to expensive calculation
   void _calculate() {
     final now = DateTime.now();
-    final currentTime = Duration(hours: now.hour, minutes: now.minute, seconds: now.second);
 
-    final scheduledHour = widget.scheduledHours.firstWhere(
-      (s) => currentTime.compareTo(s.from) >= 0 && currentTime.compareTo(s.to) < 0,
-      orElse: () => ScheduledHour(null, null),
+    Duration fromTime = widget.fromTime ?? Duration();
+    Duration toTime = widget.toTime ?? Duration();
+    Duration currentTime = Duration(hours: now.hour, minutes: now.minute, seconds: now.second);
+
+    if (fromTime.compareTo(toTime) > 0) {
+      toTime = Duration(seconds: toTime.inSeconds, days: 1);
+    }
+
+    final secondsPassed = currentTime.inSeconds - fromTime.inSeconds;
+    final isActive = currentTime.compareTo(fromTime) > 0 && currentTime.compareTo(toTime) < 0;
+    _progress = Duration(
+      seconds: (!isActive || !widget.isEnabled) ? 0 : (secondsPassed % widget?.interval?.inSeconds),
     );
-
-    _from = scheduledHour.from;
-    _to = scheduledHour.to;
-
-    _max = _isActive ? (_to.inSeconds - _from.inSeconds).toDouble() : 1.0;
-    _initialValue = _isActive ? (currentTime.inSeconds - _from.inSeconds).toDouble() : 0.0;
+    _start = isActive ? Duration(seconds: currentTime.inSeconds - _progress.inSeconds) : fromTime;
+    _end = Duration(seconds: _start.inSeconds + (widget.interval?.inSeconds ?? 0));
 
     if (mounted) {
       setState(() {
-        _from = _from;
-        _to = _to;
-        _initialValue = _initialValue;
-        _max = _max;
+        _progress = _progress;
+        _start = _start;
+        _end = _end;
       });
+    }
 
-      if (_isActive && _initialValue == 0.0) _onEnd();
+    if (isActive && widget.isEnabled && _progress.inSeconds == 0) {
+      _onEnd();
     }
   }
 
@@ -160,11 +173,5 @@ class _ClockState extends State<Clock> {
       _calculate();
       _setupTimer();
     });
-  }
-
-  @override
-  void dispose() {
-    _cancelTimer();
-    super.dispose();
   }
 }

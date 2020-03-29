@@ -1,4 +1,5 @@
 import 'package:app/blocs/states/states.dart';
+import 'package:app/commons/commons.dart';
 import 'package:meta/meta.dart';
 
 import '../app_tab.dart';
@@ -21,6 +22,8 @@ class HomeState implements LoadingState {
   bool get isIntervalUpdated => (updatedInterval != null && updatedInterval.compareTo(interval) != 0);
 
   bool get hasUnsavedChanges => isFromTimeUpdated || isToTimeUpdated || isIntervalUpdated;
+
+  List<ScheduledHour> get scheduledHours => calculateScheduledHours(fromTime, toTime, interval);
 
   @override
   final bool loading;

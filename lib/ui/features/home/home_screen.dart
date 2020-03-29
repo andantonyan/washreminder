@@ -23,9 +23,11 @@ class HomeScreen extends StatelessWidget {
 
           return Scaffold(
             body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
-                child: _buildBody(context, state),
+              child: Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                  child: _buildBody(context, state),
+                ),
               ),
             ),
             bottomNavigationBar: _buildBottomNavigationBar(context, state),
@@ -40,9 +42,7 @@ class HomeScreen extends StatelessWidget {
       case AppTab.dashboard:
         return Dashboard(
           isEnabled: state.isEnabled,
-          fromTime: state.fromTime,
-          toTime: state.toTime,
-          interval: state.interval,
+          scheduledHours: state.scheduledHours,
         );
       case AppTab.settings:
         return Settings(

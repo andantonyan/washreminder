@@ -80,7 +80,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapIntervalChangeToState(final Duration interval) async* {
-    yield state.update(updatedInterval: interval);
+    yield state.update(
+      updatedInterval: interval,
+      updatedToTime: state.updatedToTime ?? state.toTime,
+      updatedFromTime: state.updatedFromTime ?? state.fromTime,
+    );
   }
 
   Stream<HomeState> _mapFromTimeChangeToState(final Duration fromTime) async* {
